@@ -2,15 +2,15 @@ var parser = require('fast-xml-parser');
 var fs = require('fs');
 
 
-var data = fs.readFileSync("./strings-en.xml", "utf8");
+var data = fs.readFileSync("./test.xml", "utf8");
 
-let text = '<resources><string translatable="false" name="abc">Hello</string><string name="def">World</string></resources>';
 try {
     var jsonObj = parser.parse(data, {ignoreAttributes: false, stopNodes: ["string"]}, true);
 
     jsonObj.resources.string.forEach(stringElement => {
         console.log(stringElement);
-        var item = `"${stringElement['@_name']}","${stringElement['#text'].trim()}"`
+        var shouldTranslate = stringElement['@_translatable'] === 'true';
+        var item = `"${stringElement['@_name']}","${stringElement['#text'].trim()}", ${shouldTranslate}`;
         fs.appendFileSync('./output.csv', item+'\n');
     });
 
